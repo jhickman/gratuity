@@ -1,9 +1,11 @@
 import { Box, Button, Grid, Modal, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { SectionHeader } from './SectionHeader';
 
 interface KeypadModalProps {
   open: boolean;
   initialAmount: string;
+  label?: string;
   onClose: () => void;
   onConfirm: (value: string) => void;
 }
@@ -11,6 +13,7 @@ interface KeypadModalProps {
 export const KeypadModal: React.FC<KeypadModalProps> = ({
   open,
   initialAmount,
+  label,
   onClose,
   onConfirm,
 }) => {
@@ -58,12 +61,11 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
           pt: 6,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Bill Amount
-        </Typography>
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3">
           {formatAmount()}
         </Typography>
+
+        <SectionHeader text={label ?? ''} />
 
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
           <Grid container spacing={0} sx={{ flexGrow: 1, width: '100%' }}>
