@@ -12,14 +12,13 @@ import SpaIcon from '@mui/icons-material/Spa';
 import {
   Box,
   Container,
-  Grid,
   IconButton,
   Paper,
-  responsiveFontSizes,
   ToggleButton,
   Typography
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import Grid from '@mui/material/Grid'
+import { useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { KeypadModal } from './KeypadModal';
 import { SectionHeader } from './SectionHeader';
@@ -145,9 +144,10 @@ function App() {
     }
 
     setLastEdited(prev => {
-      const updated = [...prev.filter(x => x !== calculatorOpen), calculatorOpen];
-      return updated.slice(-2);
-    });
+      if (!calculatorOpen) return prev
+      const updated = [...prev.filter(x => x !== calculatorOpen), calculatorOpen]
+      return updated.slice(-2)
+    })
 
     setCalculatorOpen(null);
   };
@@ -215,7 +215,7 @@ function App() {
             <Box {...swipeHandlers}>
               <Grid container spacing={2} justifyContent="center" sx={{ mb: 1, gap: '2em' }}>
                 {venues.slice(venuePage * 3, venuePage * 3 + 3).map((option) => (
-                  <Grid item key={option.value}>
+                  <Grid key={option.value}>
                     <ToggleButton
                       value={option.value}
                       selected={venue === option.value}
@@ -269,7 +269,7 @@ function App() {
             { value: 'okay', icon: <SentimentSatisfiedIcon />, label: 'Okay' },
             { value: 'great', icon: <SentimentVerySatisfiedIcon />, label: 'Great' },
           ].map((option) => (
-            <Grid item key={option.value}>
+            <Grid key={option.value}>
               <ToggleButton
                 value={option.value}
                 selected={service === option.value}

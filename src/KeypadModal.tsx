@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Modal, Typography } from '@mui/material';
+import { Box, Grid, Modal, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SectionHeader } from './SectionHeader';
 
@@ -88,7 +88,7 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
           <Grid container spacing={0} sx={{ flexGrow: 1, width: '100%' }}>
             {['1','2','3','4','5','6','7','8','9','<','0','Return'].map((key, index) => (
-              <Grid item xs={4} key={index}>
+              <Grid size={4} key={index}>
                 <Box
                   onClick={() => {
                     if (key === '<') return handleBackspace();
