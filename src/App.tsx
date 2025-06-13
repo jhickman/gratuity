@@ -27,6 +27,15 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 
 
+const venues = [
+  { label: 'Restaurant', value: 'restaurant', icon: <RestaurantIcon />, tips: [10, 15, 20] },
+  { label: 'Bar', value: 'bar', icon: <LocalBarIcon />, tips: [5, 10, 20] },
+  { label: 'Delivery', value: 'delivery', icon: <DeliveryDiningIcon />, tips: [10, 15, 20] },
+  { label: 'Salon', value: 'salon', icon: <SpaIcon />, tips: [10, 20, 25] },
+  { label: 'Barber', value: 'barber', icon: <ContentCutIcon />, tips: [10, 15, 20] },
+  { label: 'Spa', value: 'spa', icon: <FaceIcon />, tips: [15, 20, 25] },
+];
+
 function App() {
   const [billAmount, setBillAmount] = useState('');
   const [venue, setVenue] = useState('restaurant');
@@ -58,26 +67,14 @@ function App() {
     },
   };
 
-  const venuePages = [
-    [
-      { label: 'Restaurant', value: 'restaurant', icon: <RestaurantIcon /> },
-      { label: 'Bar', value: 'bar', icon: <LocalBarIcon /> },
-      { label: 'Delivery', value: 'delivery', icon: <DeliveryDiningIcon /> },
-    ],
-    [
-      { label: 'Salon', value: 'salon', icon: <SpaIcon /> },
-      { label: 'Barber', value: 'barber', icon: <ContentCutIcon /> },
-      { label: 'Spa', value: 'spa', icon: <FaceIcon /> },
-    ]
-  ];
-
   const [venuePage, setVenuePage] = useState(0);
+  const totalVenuePages = Math.ceil(venues.length / 3);
 
   const handleNextPage = () => {
-    setVenuePage((prev) => (prev + 1) % venuePages.length);
+    setVenuePage((prev) => (prev + 1) % totalVenuePages);
   };
   const handleBackPage = () => {
-    setVenuePage((prev) => (prev - 1 + venuePages.length) % venuePages.length);
+    setVenuePage((prev) => (prev - 1 + totalVenuePages) % totalVenuePages);
   };
 
   const bill = parseFloat(billAmount) || 0;
@@ -134,12 +131,19 @@ function App() {
           return (
             <Box {...swipeHandlers}>
               <Grid container spacing={2} justifyContent="center" sx={{ mb: 1, gap: '2em' }}>
-                {venuePages[venuePage].map((option) => (
+                {venues.slice(venuePage * 3, venuePage * 3 + 3).map((option) => (
                   <Grid item key={option.value}>
                     <ToggleButton
                       value={option.value}
                       selected={venue === option.value}
-                      onChange={() => setVenue(option.value)}
+                      onChange={() => {
+                        setVenue(option.value);
+                        const index = service === 'poor' ? 0 : service === 'okay' ? 1 : 2;
+                        const selectedVenue = venues.find(v => v.value === option.value);
+                        if (selectedVenue) {
+                          setTipPercent(selectedVenue.tips[index]);
+                        }
+                      }}
                       sx={iconButtonSx}
                     >
                       <Box display="flex" flexDirection="column" alignItems="center">
@@ -153,7 +157,7 @@ function App() {
                 ))}
               </Grid>
               <Box display="flex" justifyContent="center" mb={3}>
-                {venuePages.map((_, i) => (
+                {Array.from({ length: totalVenuePages }).map((_, i) => (
                   <Box
                     key={i}
                     sx={{
@@ -186,7 +190,14 @@ function App() {
               <ToggleButton
                 value={option.value}
                 selected={service === option.value}
-                onChange={() => setService(option.value)}
+                onChange={() => {
+                  setService(option.value);
+                  const index = option.value === 'poor' ? 0 : option.value === 'okay' ? 1 : 2;
+                  const currentVenue = venues.find(v => v.value === venue);
+                  if (currentVenue) {
+                    setTipPercent(currentVenue.tips[index]);
+                  }
+                }}
                 sx={iconButtonSx}
               >
                 <Box display="flex" flexDirection="column" alignItems="center">
