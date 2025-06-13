@@ -46,6 +46,24 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
     onClose();
   };
 
+  // Listen for keyboard events when modal is open
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key >= '0' && e.key <= '9') {
+        handleDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        handleBackspace();
+      } else if (e.key === 'Enter') {
+        handleConfirm();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, value]);
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -70,7 +88,7 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
           <Grid container spacing={0} sx={{ flexGrow: 1, width: '100%' }}>
             {['1','2','3','4','5','6','7','8','9','<','0','Return'].map((key, index) => (
-              <Grid item size={4} key={index}>
+              <Grid item xs={4} key={index}>
                 <Box
                   onClick={() => {
                     if (key === '<') return handleBackspace();
@@ -78,11 +96,13 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
                     handleDigit(key);
                   }}
                   sx={{
-                    height: '100px',
+                    height: '28vw',
+                    maxHeight: '100px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: key === 'Return' ? 20 : 36,
+                    fontSize: key === 'Return' ? '5vw' : '9vw',
+                    maxFontSize: 36,
                     color: 'white',
                     userSelect: 'none',
                     cursor: 'pointer',

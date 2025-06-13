@@ -15,6 +15,7 @@ import {
   Grid,
   IconButton,
   Paper,
+  responsiveFontSizes,
   ToggleButton,
   Typography
 } from '@mui/material';
@@ -71,8 +72,10 @@ function App() {
   }, [subTotalAmount, taxAmountInput, billAmount, lastEdited]);
 
   const iconButtonSx = {
-    width: 100,
-    height: 100,
+    width: '20vw',
+    height: '20vw',
+    maxWidth: 100,
+    maxHeight: 100,
     borderRadius: '50%',
     backgroundColor: '#90DBDD',
     color: '#0097a7',
@@ -82,6 +85,10 @@ function App() {
     alignItems: 'center',
     border: 'none',
     textTransform: 'none',
+    fontSize: 'clamp(12px, 4vw, 16px)',
+    '& svg': {
+      fontSize: 'clamp(20px, 8vw, 56px)',
+    },
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.3)',
     },

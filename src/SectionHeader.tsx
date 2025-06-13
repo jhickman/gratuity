@@ -8,7 +8,7 @@ interface SectionHeaderProps {
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = false }) => {
   if (fullWidth) {
     return (
-      <Box mt={4} mb={2} width={'100%'}>
+      <Box my={2} width={'100%'}>
         <hr
           style={{
             border: 0,
@@ -24,7 +24,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = 
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mb={2} mt={4} width={'100%'}>
+    <Box display="flex" alignItems="center" justifyContent="center" my={2} width={'100%'}>
       <Box
         flex={1}
         sx={{
