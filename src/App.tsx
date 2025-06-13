@@ -4,23 +4,20 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import FaceIcon from '@mui/icons-material/Face';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SpaIcon from '@mui/icons-material/Spa';
-import MenuIcon from '@mui/icons-material/Menu';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Menu, MenuItem } from '@mui/material';
 import {
   Box,
   Container,
-  IconButton,
-  Paper,
+  IconButton, Menu, MenuItem, Paper,
   ToggleButton,
   Typography
 } from '@mui/material';
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { KeypadModal } from './KeypadModal';
@@ -492,9 +489,3 @@ function App() {
 }
 
 export default App;
-// Rounding options array for future use
-const roundingOptions = [
-  { label: 'Round Tip to Dollar', value: 'dollar' },
-  { label: 'Round Tip to Dime', value: 'dime' },
-  { label: 'Round Total to Dime', value: 'dimeTotal' }
-];
