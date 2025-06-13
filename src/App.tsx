@@ -152,6 +152,18 @@ function App() {
     setCalculatorOpen(null);
   };
 
+  useEffect(() => {
+    const handleOrientation = () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      document.body.classList.toggle('landscape-mode', isLandscape);
+    };
+
+    window.addEventListener('resize', handleOrientation);
+    handleOrientation(); // initial check
+
+    return () => window.removeEventListener('resize', handleOrientation);
+  }, []);
+
   return (
     <Box
       sx={{
