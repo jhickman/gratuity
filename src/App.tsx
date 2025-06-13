@@ -57,6 +57,14 @@ function App() {
     setAnchorEl(event.currentTarget);
   };
 
+  // Handles selecting a rounding option and ensures rounding is enabled
+  const handleRoundingOptionSelect = (option: typeof rounding) => {
+    setRounding(option);
+    if (!roundingEnabled || rounding !== option) {
+      setRoundingEnabled(true);
+    }
+  };
+
   const handleRoundingMenuClose = () => {
     setAnchorEl(null);
   };
@@ -402,13 +410,34 @@ function App() {
                 open={roundingMenuOpen}
                 onClose={handleRoundingMenuClose}
               >
-                <MenuItem onClick={() => { setRounding('dollar'); handleRoundingMenuClose(); }}>
+                <MenuItem
+                  selected={rounding === 'dollar'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRoundingOptionSelect('dollar');
+                    handleRoundingMenuClose();
+                  }}
+                >
                   Round Tip to Dollar {rounding === 'dollar' && '✓'}
                 </MenuItem>
-                <MenuItem onClick={() => { setRounding('dime'); handleRoundingMenuClose(); }}>
+                <MenuItem
+                  selected={rounding === 'dime'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRoundingOptionSelect('dime');
+                    handleRoundingMenuClose();
+                  }}
+                >
                   Round Tip to Dime {rounding === 'dime' && '✓'}
                 </MenuItem>
-                <MenuItem onClick={() => { setRounding('dimeTotal'); handleRoundingMenuClose(); }}>
+                <MenuItem
+                  selected={rounding === 'dimeTotal'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRoundingOptionSelect('dimeTotal');
+                    handleRoundingMenuClose();
+                  }}
+                >
                   Round Total to Dime {rounding === 'dimeTotal' && '✓'}
                 </MenuItem>
               </Menu>
