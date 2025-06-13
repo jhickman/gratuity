@@ -1,29 +1,26 @@
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import FaceIcon from '@mui/icons-material/Face';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import SpaIcon from '@mui/icons-material/Spa';
+import {
+  Box,
+  Container,
+  Grid,
+  IconButton,
+  Paper,
+  ToggleButton,
+  Typography
+} from '@mui/material';
 import { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import {
-  Container,
-  Typography,
-  TextField,
-  ToggleButton,
-  IconButton,
-  Box,
-  Button,
-  Paper,
-  MobileStepper,
-  Grid,
-  styled,
-} from '@mui/material';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import LocalBarIcon from '@mui/icons-material/LocalBar';
-import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
-import SpaIcon from '@mui/icons-material/Spa';
-import ContentCutIcon from '@mui/icons-material/ContentCut';
-import FaceIcon from '@mui/icons-material/Face';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
-import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { KeypadModal } from './KeypadModal';
 
 
 
@@ -36,12 +33,15 @@ const venues = [
   { label: 'Spa', value: 'spa', icon: <FaceIcon />, tips: [15, 20, 25] },
 ];
 
+
 function App() {
   const [billAmount, setBillAmount] = useState('');
   const [venue, setVenue] = useState('restaurant');
   const [service, setService] = useState('okay');
   const [tipPercent, setTipPercent] = useState(15);
   const [numPeople, setNumPeople] = useState(1);
+
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   const iconButtonSx = {
     width: 100,
@@ -86,6 +86,13 @@ function App() {
     return Math.max(min, value + delta);
   };
 
+  const displayBillAmount = () => {
+    if (!billAmount || parseFloat(billAmount) === 0) {
+      return 'Tap to Enter Your Bill Amount';
+    }
+    return `$${parseFloat(billAmount).toFixed(2)}`;
+  };
+
   return (
     <Box
       sx={{
@@ -97,28 +104,15 @@ function App() {
       }}
     >
       <Container maxWidth="xs">
-        <Typography variant="h6" align="center" gutterBottom>
-          Tap to Enter Your Bill Amount
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setCalculatorOpen(true)}
+        >
+          {displayBillAmount()}
         </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          inputProps={{ inputMode: 'decimal', style: { textAlign: 'center', color: 'white' } }}
-          InputLabelProps={{ style: { color: 'white' } }}
-          sx={{
-            mb: 3,
-            '& .MuiOutlinedInput-root': {
-              color: 'white',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              '& fieldset': { borderColor: 'white' },
-              '&:hover fieldset': { borderColor: 'white' },
-              '&.Mui-focused fieldset': { borderColor: 'white' },
-            },
-          }}
-          label="Bill Amount"
-          value={billAmount}
-          onChange={(e) => setBillAmount(e.target.value)}
-        />
         <SectionHeader fullWidth text="" />
 
 
@@ -276,6 +270,18 @@ function App() {
           Total: ${total.toFixed(2)}
         </Typography>
       </Container>
+      <KeypadModal
+        open={calculatorOpen}
+        initialAmount={billAmount.replace('.', '')}
+        onClose={() => setCalculatorOpen(false)}
+        onConfirm={(amount) => {
+          const digits = amount.replace(/\D/g, '');
+          const num = parseInt(digits || '0', 10);
+          const dollars = Math.floor(num / 100);
+          const cents = num % 100;
+          setBillAmount(`${dollars}.${cents.toString().padStart(2, '0')}`);
+        }}
+      />
     </Box>
   );
 }
