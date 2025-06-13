@@ -9,6 +9,9 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import SpaIcon from '@mui/icons-material/Spa';
+import MenuIcon from '@mui/icons-material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Menu, MenuItem } from '@mui/material';
 import {
   Box,
   Container,
@@ -44,6 +47,32 @@ function App() {
   const [service, setService] = useState('okay');
   const [tipPercent, setTipPercent] = useState(15);
   const [numPeople, setNumPeople] = useState(1);
+
+  const [rounding, setRounding] = useState<'dollar' | 'dime' | 'dimeTotal'>('dollar');
+  const [roundingEnabled, setRoundingEnabled] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const roundingMenuOpen = Boolean(anchorEl);
+
+  const handleRoundingMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleRoundingMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const applyRounding = (value: number): number => {
+    if (!roundingEnabled) return value;
+    switch (rounding) {
+      case 'dollar':
+        return Math.round(value);
+      case 'dime':
+        return Math.round(value * 10) / 10;
+      // 'dimeTotal' handled specially below
+      default:
+        return value;
+    }
+  };
 
   // 'subtotal' | 'taxes' | 'total' | null
   const [calculatorOpen, setCalculatorOpen] = useState<'subtotal' | 'taxes' | 'total' | null>(null);
@@ -114,8 +143,15 @@ function App() {
   const sub = parseFloat(subTotalAmount) || 0;
   const tax = parseFloat(taxAmountInput) || 0;
   const totalBill = manualTotal ? parseFloat(billAmount) || 0 : (sub + tax);
-  const tipAmount = sub * (tipPercent / 100);
-  const totalWithTip = totalBill + tipAmount;
+  const rawTipAmount = sub * (tipPercent / 100);
+  let tipAmount = applyRounding(rawTipAmount);
+  let totalWithTip = totalBill + tipAmount;
+  if (roundingEnabled && rounding === 'dimeTotal') {
+    const grandTotal = totalBill + rawTipAmount;
+    const roundedTotal = Math.round((grandTotal || 0) * 10) / 10;
+    tipAmount = roundedTotal - (sub || 0) - (tax || 0);
+    totalWithTip = roundedTotal;
+  }
   const eachPays = totalWithTip / numPeople;
 
   const adjustValue = (value: number, delta: number, min: number = 1) => {
@@ -313,7 +349,17 @@ function App() {
             <Grid size={6} sx={{ borderBottom: '1px solid rgba(255,255,255,0.2)', borderRight: '1px solid rgba(255,255,255,0.2)', p: 2, textAlign: 'center' }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box textAlign="center">
-                  <Typography variant="h5">{tipPercent}%</Typography>
+                  {(() => {
+                    // Show adjusted tip percent if rounding is enabled, else base tipPercent
+                    const effectiveTipPercent = roundingEnabled && sub > 0
+                      ? Math.round((tipAmount / sub) * 100)
+                      : tipPercent;
+                    return (
+                      <Typography variant="h5" align="center">
+                        {effectiveTipPercent}%
+                      </Typography>
+                    );
+                  })()}
                   <Typography noWrap variant="caption">Tip Percentage</Typography>
                 </Box>
                 <Box display="flex" flexDirection={"column"}>
@@ -326,9 +372,46 @@ function App() {
                 </Box>
               </Box>
             </Grid>
-            <Grid size={6} sx={{ borderBottom: '1px solid rgba(255,255,255,0.2)', p: 2, textAlign: 'center' }}>
+            <Grid
+              size={6}
+              sx={{
+                borderBottom: '1px solid rgba(255,255,255,0.2)',
+                p: 2,
+                textAlign: 'center',
+                position: 'relative',
+                cursor: 'pointer',
+              }}
+              onClick={() => setRoundingEnabled(!roundingEnabled)}
+            >
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRoundingMenuClick(e);
+                }}
+                size="small"
+                sx={{ position: 'absolute', top: 0, right: 0, color: 'white' }}
+              >
+                <MoreVertIcon fontSize="small" />
+              </IconButton>
               <Typography variant="h5">${tipAmount.toFixed(2)}</Typography>
-              <Typography variant="caption">Tip Amount<br />(Tap to Unround)</Typography>
+              <Typography variant="caption">
+                Tip Amount<br />(Tap to {roundingEnabled ? 'Unround' : 'Round'})
+              </Typography>
+              <Menu
+                anchorEl={anchorEl}
+                open={roundingMenuOpen}
+                onClose={handleRoundingMenuClose}
+              >
+                <MenuItem onClick={() => { setRounding('dollar'); handleRoundingMenuClose(); }}>
+                  Round Tip to Dollar {rounding === 'dollar' && '✓'}
+                </MenuItem>
+                <MenuItem onClick={() => { setRounding('dime'); handleRoundingMenuClose(); }}>
+                  Round Tip to Dime {rounding === 'dime' && '✓'}
+                </MenuItem>
+                <MenuItem onClick={() => { setRounding('dimeTotal'); handleRoundingMenuClose(); }}>
+                  Round Total to Dime {rounding === 'dimeTotal' && '✓'}
+                </MenuItem>
+              </Menu>
             </Grid>
 
             {/* Row 2 */}
@@ -380,3 +463,9 @@ function App() {
 }
 
 export default App;
+// Rounding options array for future use
+const roundingOptions = [
+  { label: 'Round Tip to Dollar', value: 'dollar' },
+  { label: 'Round Tip to Dime', value: 'dime' },
+  { label: 'Round Total to Dime', value: 'dimeTotal' }
+];
