@@ -18,7 +18,7 @@ import {
   ToggleButton,
   Typography
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { KeypadModal } from './KeypadModal';
 import { SectionHeader } from './SectionHeader';
@@ -37,12 +37,38 @@ const venues = [
 
 function App() {
   const [billAmount, setBillAmount] = useState('');
+  const [manualTotal, setManualTotal] = useState(false);
+  const [subTotalAmount, setSubTotalAmount] = useState('');
+  const [taxAmountInput, setTaxAmountInput] = useState('');
   const [venue, setVenue] = useState('restaurant');
   const [service, setService] = useState('okay');
   const [tipPercent, setTipPercent] = useState(15);
   const [numPeople, setNumPeople] = useState(1);
 
-  const [calculatorOpen, setCalculatorOpen] = useState(false);
+  // 'subtotal' | 'taxes' | 'total' | null
+  const [calculatorOpen, setCalculatorOpen] = useState<'subtotal' | 'taxes' | 'total' | null>(null);
+
+  const [lastEdited, setLastEdited] = useState<string[]>([]);
+
+  useEffect(() => {
+    const sub = parseFloat(subTotalAmount);
+    const tax = parseFloat(taxAmountInput);
+    const total = parseFloat(billAmount);
+
+    if (lastEdited.includes('subtotal') && lastEdited.includes('taxes')) {
+      if (!isNaN(sub) && !isNaN(tax)) {
+        setBillAmount((sub + tax).toFixed(2));
+      }
+    } else if (lastEdited.includes('subtotal') && lastEdited.includes('total')) {
+      if (!isNaN(sub) && !isNaN(total)) {
+        setTaxAmountInput((total - sub).toFixed(2));
+      }
+    } else if (lastEdited.includes('taxes') && lastEdited.includes('total')) {
+      if (!isNaN(tax) && !isNaN(total)) {
+        setSubTotalAmount((total - tax).toFixed(2));
+      }
+    }
+  }, [subTotalAmount, taxAmountInput, billAmount, lastEdited]);
 
   const iconButtonSx = {
     width: 100,
@@ -78,20 +104,45 @@ function App() {
     setVenuePage((prev) => (prev - 1 + totalVenuePages) % totalVenuePages);
   };
 
-  const bill = parseFloat(billAmount) || 0;
-  const tipAmount = bill * (tipPercent / 100);
-  const total = bill + tipAmount;
-  const eachPays = total / numPeople;
+  // Use subTotalAmount and taxAmountInput for tip calculations, fallback to billAmount if subtotal is empty
+  const sub = parseFloat(subTotalAmount) || 0;
+  const tax = parseFloat(taxAmountInput) || 0;
+  const totalBill = manualTotal ? parseFloat(billAmount) || 0 : (sub + tax);
+  const tipAmount = sub * (tipPercent / 100);
+  const totalWithTip = totalBill + tipAmount;
+  const eachPays = totalWithTip / numPeople;
 
   const adjustValue = (value: number, delta: number, min: number = 1) => {
     return Math.max(min, value + delta);
   };
 
-  const displayBillAmount = () => {
-    if (!billAmount || parseFloat(billAmount) === 0) {
-      return 'Tap to Enter Your Bill Amount';
+  const handleValueConfirm = (amount: string) => {
+    const digits = amount.replace(/\D/g, '');
+    const num = parseInt(digits || '0', 10);
+    const dollars = Math.floor(num / 100);
+    const cents = num % 100;
+    const value = `${dollars}.${cents.toString().padStart(2, '0')}`;
+    if (calculatorOpen === 'subtotal') {
+      setSubTotalAmount(value);
+      if (!manualTotal) {
+        setBillAmount(''); // Clear auto-calculated total
+      }
+    } else if (calculatorOpen === 'taxes') {
+      setTaxAmountInput(value);
+      if (!manualTotal) {
+        setBillAmount('');
+      }
+    } else {
+      setBillAmount(value);
+      setManualTotal(true);
     }
-    return `$${parseFloat(billAmount).toFixed(2)}`;
+
+    setLastEdited(prev => {
+      const updated = [...prev.filter(x => x !== calculatorOpen), calculatorOpen];
+      return updated.slice(-2);
+    });
+
+    setCalculatorOpen(null);
   };
 
   return (
@@ -110,9 +161,27 @@ function App() {
           align="center"
           gutterBottom
           sx={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setCalculatorOpen(true)}
+          onClick={() => setCalculatorOpen('subtotal')}
         >
-          {displayBillAmount()}
+          {subTotalAmount ? `Subtotal: $${parseFloat(subTotalAmount).toFixed(2)}` : 'Tap to Enter Subtotal (pre-tax)'}
+        </Typography>
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setCalculatorOpen('taxes')}
+        >
+          {taxAmountInput ? `Taxes: $${parseFloat(taxAmountInput).toFixed(2)}` : 'Tap to Enter Taxes/Fees'}
+        </Typography>
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setCalculatorOpen('total')}
+        >
+          {billAmount ? `Total: $${parseFloat(billAmount).toFixed(2)}` : 'Tap to Enter Total'}
         </Typography>
         <SectionHeader fullWidth text="" />
 
@@ -268,22 +337,25 @@ function App() {
         </Paper>
 
         <Typography variant="h6" align="center" mt={4}>
-          Total: ${total.toFixed(2)}
+          Grand Total: ${totalWithTip.toFixed(2)}
         </Typography>
       </Container>
-      <KeypadModal
-        open={calculatorOpen}
-        label='Bill Amount'
-        initialAmount={billAmount.replace('.', '')}
-        onClose={() => setCalculatorOpen(false)}
-        onConfirm={(amount) => {
-          const digits = amount.replace(/\D/g, '');
-          const num = parseInt(digits || '0', 10);
-          const dollars = Math.floor(num / 100);
-          const cents = num % 100;
-          setBillAmount(`${dollars}.${cents.toString().padStart(2, '0')}`);
-        }}
-      />
+      {calculatorOpen && (
+        <KeypadModal
+          open={!!calculatorOpen}
+          label={calculatorOpen === 'subtotal' ? 'Subtotal Amount' : calculatorOpen === 'taxes' ? 'Taxes/Fees' : 'Total Amount'}
+          initialAmount={
+            (calculatorOpen === 'subtotal'
+              ? subTotalAmount
+              : calculatorOpen === 'taxes'
+                ? taxAmountInput
+                : billAmount
+            ).replace('.', '')
+          }
+          onClose={() => setCalculatorOpen(null)}
+          onConfirm={handleValueConfirm}
+        />
+      )}
     </Box>
   );
 }
