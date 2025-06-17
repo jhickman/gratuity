@@ -15,7 +15,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = 
             height: '2px',
             width: '100%',
             flex: 1,
-            backgroundColor: 'rgba(255,255,255,0.4)',
+            backgroundColor: 'var(--accent-color, rgba(255,255,255,0.4))',
             margin: 0,
           }}
         />
@@ -29,7 +29,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = 
         flex={1}
         sx={{
           height: '2px',
-          backgroundColor: 'rgba(255,255,255,0.4)',
+          backgroundColor: 'var(--accent-color, rgba(255,255,255,0.4))',
           mr: 1,
           maxWidth: '100%',
           minWidth: 16,
@@ -40,7 +40,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = 
         variant="subtitle1"
         sx={{
           fontWeight: 600,
-          color: 'white',
+          color: 'var(--text-color, white)',
           whiteSpace: 'nowrap',
           letterSpacing: 1,
           px: 2,
@@ -52,7 +52,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ text, fullWidth = 
         flex={1}
         sx={{
           height: '2px',
-          backgroundColor: 'rgba(255,255,255,0.4)',
+          backgroundColor: 'var(--accent-color, rgba(255,255,255,0.4))',
           ml: 1,
           maxWidth: '100%',
           minWidth: 16,

@@ -70,8 +70,8 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
         sx={{
           height: '100vh',
           width: '100vw',
-          backgroundColor: '#0097a7',
-          color: 'white',
+          backgroundColor: 'var(--primary-color)',
+          color: 'var(--text-color)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -103,11 +103,11 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
                     justifyContent: 'center',
                     fontSize: key === 'Return' ? '5vw' : '9vw',
                     maxFontSize: 36,
-                    color: 'white',
+                    color: 'var(--text-color)',
                     userSelect: 'none',
                     cursor: 'pointer',
                     '&:active': {
-                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      backgroundColor: 'var(--accent-color)',
                     },
                   }}
                 >

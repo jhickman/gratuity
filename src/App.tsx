@@ -110,8 +110,8 @@ function App() {
     maxWidth: 100,
     maxHeight: 100,
     borderRadius: '50%',
-    backgroundColor: '#90DBDD',
-    color: '#0097a7',
+    backgroundColor: 'var(--primary-color)',
+    color: 'var(--text-color)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -123,13 +123,13 @@ function App() {
       fontSize: 'clamp(20px, 8vw, 56px)',
     },
     '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+      backgroundColor: 'var(--primary-hover)',
     },
     '&.Mui-selected': {
-      backgroundColor: 'white',
-      color: '#0097a7',
+      backgroundColor: 'var(--accent-color)',
+      color: 'var(--primary-color)',
       '&:hover': {
-        backgroundColor: 'white',
+        backgroundColor: 'var(--accent-color)',
       },
     },
   };
@@ -195,7 +195,7 @@ function App() {
 
   useEffect(() => {
     const handleOrientation = () => {
-      const isLandscape = window.innerWidth > window.innerHeight;
+      const isLandscape = window.innerHeight < 740;//false;//window.innerWidth > window.innerHeight;
       document.body.classList.toggle('landscape-mode', isLandscape);
     };
 
@@ -210,8 +210,8 @@ function App() {
       sx={{
         minHeight: '100vh',
         minWidth: '100vw',
-        backgroundColor: '#0097a7',
-        color: 'white',
+        backgroundColor: 'var(--background-color)',
+        color: 'var(--text-color)',
         py: 4,
       }}
     >
@@ -288,7 +288,7 @@ function App() {
                       width: 10,
                       height: 10,
                       borderRadius: '50%',
-                      backgroundColor: i === venuePage ? 'white' : 'rgba(255,255,255,0.4)',
+                      backgroundColor: i === venuePage ? 'var(--accent-color)' : 'var(--primary-color)',
                       mx: 0.5,
                     }}
                   />
@@ -341,7 +341,7 @@ function App() {
         <Paper
           sx={{
             backgroundColor: 'rgba(255,255,255,0.1)',
-            color: 'white',
+            color: 'var(--text-color)',
             mt: 2,
             px: 0,
             py: 0,
