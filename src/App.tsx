@@ -398,11 +398,11 @@ function App() {
                   <Typography noWrap variant="caption">Tip Percentage</Typography>
                 </Box>
                 <Box display="flex" flexDirection={"column"}>
-                  <IconButton onClick={() => setTipPercent(adjustValue(tipPercent, 1))} color="inherit">
-                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
+                  <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, 1))} color="inherit">
+                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
                   </IconButton>
-                  <IconButton onClick={() => setTipPercent(adjustValue(tipPercent, -1))} color="inherit">
-                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
+                  <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, -1))} color="inherit">
+                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
                   </IconButton>
                 </Box>
               </Box>
@@ -485,11 +485,11 @@ function App() {
                   <Typography noWrap variant="caption">No. of People</Typography>
                 </Box>
                 <Box display="flex" flexDirection={"column"}>
-                  <IconButton onClick={() => setNumPeople(adjustValue(numPeople, 1))} color="inherit">
-                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
+                  <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, 1))} color="inherit">
+                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
                   </IconButton>
-                  <IconButton onClick={() => setNumPeople(adjustValue(numPeople, -1))} color="inherit">
-                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
+                  <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, -1))} color="inherit">
+                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
                   </IconButton>
                 </Box>
               </Box>
