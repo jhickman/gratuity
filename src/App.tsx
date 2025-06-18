@@ -193,6 +193,7 @@ function App() {
     setCalculatorOpen(null);
   };
 
+  /*
   useEffect(() => {
     const handleOrientation = () => {
       const isLandscape = window.innerHeight < 740;//false;//window.innerWidth > window.innerHeight;
@@ -204,6 +205,7 @@ function App() {
 
     return () => window.removeEventListener('resize', handleOrientation);
   }, []);
+  */
 
   return (
     <Box
@@ -340,7 +342,7 @@ function App() {
 
         <Paper
           sx={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
+            backgroundColor: 'var(--panel-bg-color)',
             color: 'var(--text-color)',
             mt: 2,
             px: 0,
@@ -351,7 +353,7 @@ function App() {
         >
           <Grid container >
             {/* Row 1 */}
-            <Grid size={6} sx={{ borderBottom: '1px solid rgba(255,255,255,0.2)', borderRight: '1px solid rgba(255,255,255,0.2)', p: 2, textAlign: 'center' }}>
+            <Grid size={6} sx={{ borderBottom: '1px solid var(--panel-border-color)', borderRight: '1px solid var(--panel-border-color)', p: 2, textAlign: 'center' }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box textAlign="center">
                   {(() => {
@@ -380,7 +382,7 @@ function App() {
             <Grid
               size={6}
               sx={{
-                borderBottom: '1px solid rgba(255,255,255,0.2)',
+                borderBottom: '1px solid var(--panel-border-color)',
                 p: 2,
                 textAlign: 'center',
                 position: 'relative',
@@ -394,7 +396,7 @@ function App() {
                   handleRoundingMenuClick(e);
                 }}
                 size="small"
-                sx={{ position: 'absolute', top: 0, right: 0, color: 'white' }}
+                sx={{ position: 'absolute', top: 0, right: 0, color: 'var(--highlight-color)' }}
               >
                 <MoreVertIcon fontSize="small" />
               </IconButton>
@@ -441,7 +443,7 @@ function App() {
             </Grid>
 
             {/* Row 2 */}
-            <Grid size={6} sx={{ borderRight: '1px solid rgba(255,255,255,0.2)', p: 2, textAlign: 'center' }}>
+            <Grid size={6} sx={{ borderRight: '1px solid var(--panel-border-color)', p: 2, textAlign: 'center' }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box textAlign="center">
                   <Typography variant="h5">{numPeople}</Typography>
