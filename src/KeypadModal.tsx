@@ -68,7 +68,15 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
   }, [open, value]);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      hideBackdrop
+      disableAutoFocus
+      disableEnforceFocus
+      disableRestoreFocus
+      style={{ backgroundColor: 'var(--background-color)' }}
+    >
       <Box
         sx={{
           minHeight: '100vh',
@@ -83,10 +91,11 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
         }}
       >
         {/* Left/Top Panel: Amount and label */}
-        <Box sx={{ 
-          textAlign: 'center', 
-          py: 4, 
-          width: isLandscape ? '50vw': '100%' }}>
+        <Box sx={{
+          textAlign: 'center',
+          py: 4,
+          width: isLandscape ? '50vw' : '100%'
+        }}>
           <Typography variant="h3">{formatAmount()}</Typography>
           <SectionHeader text={label ?? ''} />
         </Box>
