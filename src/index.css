@@ -46,9 +46,15 @@
    color: #535bf2;
  }
 
+ html {
+  min-height: calc(100% + env(safe-area-inset-top));
+ }
+
  html,
  body {
    overflow: hidden;
+   padding: 0;
+   margin: 0px;
  }
 
  body {

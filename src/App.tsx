@@ -17,6 +17,7 @@ import {
   ToggleButton,
   Typography
 } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
@@ -36,6 +37,7 @@ const venues = [
 
 
 function App() {
+  const isLandscape = useMediaQuery('(orientation: landscape)');
   const [billAmount, setBillAmount] = useState('');
   const [manualTotal, setManualTotal] = useState(false);
   const [subTotalAmount, setSubTotalAmount] = useState('');
@@ -128,10 +130,10 @@ function App() {
   }, [subTotalAmount, taxAmountInput, billAmount, lastEdited]);
 
   const iconButtonSx = {
-    width: '20vw',
-    height: '20vw',
-    maxWidth: 100,
-    maxHeight: 100,
+    width: { xs: '20vw', sm: '5vw' },
+    height: { xs: '20vw', sm: '5vw' },
+    maxWidth: 80,
+    maxHeight: 80,
     borderRadius: '50%',
     backgroundColor: 'var(--primary-color)',
     color: 'var(--text-color)',
@@ -143,7 +145,10 @@ function App() {
     textTransform: 'none',
     fontSize: 'clamp(12px, 4vw, 16px)',
     '& svg': {
-      fontSize: 'clamp(20px, 8vw, 56px)',
+      fontSize: {
+        xs: 'clamp(20px, 8vw, 56px)',
+        sm: '27px',
+      }
     },
     '&:hover': {
       backgroundColor: 'var(--primary-hover)',
@@ -153,6 +158,12 @@ function App() {
       color: 'var(--primary-color)',
       '&:hover': {
         backgroundColor: 'var(--accent-color)',
+      },
+    },
+    '& .icon-label': {
+      display: {
+        xs: 'inline-block',
+        sm: 'none',
       },
     },
   };
@@ -240,273 +251,285 @@ function App() {
         py: 4,
       }}
     >
-      <Container maxWidth="xs">
-        <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          sx={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setCalculatorOpen('subtotal')}
-        >
-          {subTotalAmount ? `Subtotal: $${parseFloat(subTotalAmount).toFixed(2)}` : 'Tap to Enter Subtotal (pre-tax)'}
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          sx={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setCalculatorOpen('taxes')}
-        >
-          {taxAmountInput ? `Taxes: $${parseFloat(taxAmountInput).toFixed(2)}` : 'Tap to Enter Taxes/Fees'}
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          sx={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setCalculatorOpen('total')}
-        >
-          {billAmount ? `Total: $${parseFloat(billAmount).toFixed(2)}` : 'Tap to Enter Total'}
-        </Typography>
-        <SectionHeader fullWidth text="" />
-
-
-        {(() => {
-          const swipeHandlers = useSwipeable({
-            onSwipedLeft: () => handleNextPage(),
-            onSwipedRight: () => handleBackPage(),
-            trackMouse: true,
-          });
-          return (
-            <Box {...swipeHandlers}>
-              <Grid container spacing={2} justifyContent="center" sx={{ mb: 1, gap: '2em' }}>
-                {venues.slice(venuePage * 3, venuePage * 3 + 3).map((option) => (
-                  <Grid key={option.value}>
-                    <ToggleButton
-                      value={option.value}
-                      selected={venue === option.value}
-                      onChange={() => {
-                        setVenue(option.value);
-                        const index = service === 'poor' ? 0 : service === 'okay' ? 1 : 2;
-                        const selectedVenue = venues.find(v => v.value === option.value);
-                        if (selectedVenue) {
-                          setTipPercent(selectedVenue.tips[index]);
-                        }
-                      }}
-                      sx={iconButtonSx}
-                    >
-                      <Box display="flex" flexDirection="column" alignItems="center">
-                        {option.icon}
-                        <Typography variant="caption" sx={{ mt: 0.5 }}>
-                          {option.label}
-                        </Typography>
-                      </Box>
-                    </ToggleButton>
-                  </Grid>
-                ))}
-              </Grid>
-              <Box display="flex" justifyContent="center" mb={3}>
-                {Array.from({ length: totalVenuePages }).map((_, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      backgroundColor: i === venuePage ? 'var(--accent-color)' : 'var(--primary-color)',
-                      mx: 0.5,
-                    }}
-                  />
-                ))}
-              </Box>
-            </Box>
-          );
-        })()}
-        {/* SectionHeader for Venue */}
-        {/*
-          Subtle, short lines on either side of centered heading
-        */}
-        <SectionHeader text="SELECT YOUR VENUE" />
-
-
-        <Grid container spacing={2} justifyContent="center" sx={{ mb: 3, gap: '2em' }}>
-          {[
-            { value: 'poor', icon: <SentimentVeryDissatisfiedIcon />, label: 'Poor' },
-            { value: 'okay', icon: <SentimentSatisfiedIcon />, label: 'Okay' },
-            { value: 'great', icon: <SentimentVerySatisfiedIcon />, label: 'Great' },
-          ].map((option) => (
-            <Grid key={option.value}>
-              <ToggleButton
-                value={option.value}
-                selected={service === option.value}
-                onChange={() => {
-                  setService(option.value);
-                  const index = option.value === 'poor' ? 0 : option.value === 'okay' ? 1 : 2;
-                  const currentVenue = venues.find(v => v.value === venue);
-                  if (currentVenue) {
-                    setTipPercent(currentVenue.tips[index]);
-                  }
-                }}
-                sx={iconButtonSx}
-              >
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  {option.icon}
-                  <Typography variant="caption" sx={{ mt: 0.5 }}>
-                    {option.label}
-                  </Typography>
-                </Box>
-              </ToggleButton>
-            </Grid>
-          ))}
-        </Grid>
-        {/* SectionHeader for Service */}
-        <SectionHeader text="RATE YOUR SERVICE" />
-
-        {/* TIP BOX */}
-        <Paper
-          sx={{
-            backgroundColor: 'var(--panel-bg-color)',
-            color: 'var(--text-color)',
-            mt: 2,
-            px: 0,
-            py: 0,
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
-        >
-          <Grid container >
-            {/* Row 1 */}
-            <Grid size={6} sx={{
-              borderBottom: '1px solid var(--panel-border-color)',
-              borderRight: '1px solid var(--panel-border-color)',
-              p: 1,
-              textAlign: 'center'
-            }}>
-              <Box display="flex" alignItems="center">
-                <Box textAlign="center" flex={1}>
-                  {(() => {
-                    // Show adjusted tip percent if rounding is enabled, else base tipPercent
-                    const effectiveTipPercent = roundingEnabled && sub > 0
-                      ? Math.round((tipAmount / sub) * 100)
-                      : tipPercent;
-                    return (
-                      <Typography variant="h5" align="center">
-                        {effectiveTipPercent}%
-                      </Typography>
-                    );
-                  })()}
-                  <Typography noWrap variant="caption">Tip Percentage</Typography>
-                </Box>
-                <Box display="flex" flexDirection={"column"}>
-                  <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, 1))} color="inherit">
-                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
-                  </IconButton>
-                  <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, -1))} color="inherit">
-                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid
-              size={6}
-              sx={{
-                borderBottom: '1px solid var(--panel-border-color)',
-                p: 1,
-                textAlign: 'center',
-                position: 'relative',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-              }}
-              onClick={() => setRoundingEnabled(!roundingEnabled)}
+      <Box
+        display="flex"
+        flexDirection={isLandscape ? 'row' : 'column'}
+        justifyContent="center"
+        alignItems="stretch"
+        gap={4}
+        px={2}
+      >
+        {/* Left/Top Panel */}
+        <Box flex={1}>
+          <Container maxWidth="xs">
+            <Typography
+              variant="h6"
+              align="center"
+              gutterBottom
+              sx={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setCalculatorOpen('subtotal')}
             >
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRoundingMenuClick(e);
-                }}
-                size="small"
-                sx={{ position: 'absolute', top: 0, right: 0, color: 'var(--highlight-color)' }}
-              >
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-              <Typography variant="h5">${tipAmount.toFixed(2)}</Typography>
-              <Typography variant="caption">
-                Tip Amount<br />(Tap to {roundingEnabled ? 'Unround' : 'Round'})
-              </Typography>
-              <Menu
-                anchorEl={anchorEl}
-                open={roundingMenuOpen}
-                onClose={handleRoundingMenuClose}
-              >
-                <MenuItem
-                  selected={rounding === 'dollar'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRoundingOptionSelect('dollar');
-                    handleRoundingMenuClose();
-                  }}
-                >
-                  Round Tip to Dollar {rounding === 'dollar' && '✓'}
-                </MenuItem>
-                <MenuItem
-                  selected={rounding === 'dime'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRoundingOptionSelect('dime');
-                    handleRoundingMenuClose();
-                  }}
-                >
-                  Round Tip to Dime {rounding === 'dime' && '✓'}
-                </MenuItem>
-                <MenuItem
-                  selected={rounding === 'dimeTotal'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRoundingOptionSelect('dimeTotal');
-                    handleRoundingMenuClose();
-                  }}
-                >
-                  Round Total to Dime {rounding === 'dimeTotal' && '✓'}
-                </MenuItem>
-              </Menu>
-            </Grid>
+              {subTotalAmount ? `Subtotal: $${parseFloat(subTotalAmount).toFixed(2)}` : 'Tap to Enter Subtotal (pre-tax)'}
+            </Typography>
+            <Typography
+              variant="h6"
+              align="center"
+              gutterBottom
+              sx={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setCalculatorOpen('taxes')}
+            >
+              {taxAmountInput ? `Taxes: $${parseFloat(taxAmountInput).toFixed(2)}` : 'Tap to Enter Taxes/Fees'}
+            </Typography>
+            <Typography
+              variant="h6"
+              align="center"
+              gutterBottom
+              sx={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setCalculatorOpen('total')}
+            >
+              {billAmount ? `Total: $${parseFloat(billAmount).toFixed(2)}` : 'Tap to Enter Total'}
+            </Typography>
+            <SectionHeader fullWidth text="" />
 
-            {/* Row 2 */}
-            <Grid size={6} sx={{
-              borderRight: '1px solid var(--panel-border-color)',
-              p: 1,
-              textAlign: 'center'
-            }}>
-              <Box display="flex" alignItems="center">
-                <Box textAlign="center" flex={1}>
-                  <Typography variant="h5">{numPeople}</Typography>
-                  <Typography noWrap variant="caption">No. of People</Typography>
+            {(() => {
+              const swipeHandlers = useSwipeable({
+                onSwipedLeft: () => handleNextPage(),
+                onSwipedRight: () => handleBackPage(),
+                trackMouse: true,
+              });
+              return (
+                <Box {...swipeHandlers}>
+                  <Grid container spacing={2} justifyContent="center" sx={{ mb: 1, gap: '2em' }}>
+                    {venues.slice(venuePage * 3, venuePage * 3 + 3).map((option) => (
+                      <Grid key={option.value}>
+                        <ToggleButton
+                          value={option.value}
+                          selected={venue === option.value}
+                          onChange={() => {
+                            setVenue(option.value);
+                            const index = service === 'poor' ? 0 : service === 'okay' ? 1 : 2;
+                            const selectedVenue = venues.find(v => v.value === option.value);
+                            if (selectedVenue) {
+                              setTipPercent(selectedVenue.tips[index]);
+                            }
+                          }}
+                          sx={iconButtonSx}
+                        >
+                          <Box display="flex" flexDirection="column" alignItems="center">
+                            {option.icon}
+                            <Typography variant="caption" className="icon-label" sx={{ mt: 0.5 }}>
+                              {option.label}
+                            </Typography>
+                          </Box>
+                        </ToggleButton>
+                      </Grid>
+                    ))}
+                  </Grid>
+                  <Box display="flex" justifyContent="center" mb={3}>
+                    {Array.from({ length: totalVenuePages }).map((_, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          backgroundColor: i === venuePage ? 'var(--accent-color)' : 'var(--primary-color)',
+                          mx: 0.5,
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-                <Box display="flex" flexDirection={"column"}>
-                  <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, 1))} color="inherit">
-                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
-                  </IconButton>
-                  <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, -1))} color="inherit">
-                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid size={6} sx={{
-              p: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center'
-            }}>
-              <Typography variant="h5">${eachPays.toFixed(2)}</Typography>
-              <Typography variant="caption">Each Person Pays</Typography>
-            </Grid>
-          </Grid>
-        </Paper>
+              );
+            })()}
+            {/* SectionHeader for Venue */}
+            <SectionHeader text="SELECT YOUR VENUE" />
 
-        <Typography variant="h6" align="center" mt={4}>
-          Grand Total: ${totalWithTip.toFixed(2)}
-        </Typography>
-      </Container>
+            <Grid container spacing={2} justifyContent="center" sx={{ mb: 3, gap: '2em' }}>
+              {[
+                { value: 'poor', icon: <SentimentVeryDissatisfiedIcon />, label: 'Poor' },
+                { value: 'okay', icon: <SentimentSatisfiedIcon />, label: 'Okay' },
+                { value: 'great', icon: <SentimentVerySatisfiedIcon />, label: 'Great' },
+              ].map((option) => (
+                <Grid key={option.value}>
+                  <ToggleButton
+                    value={option.value}
+                    selected={service === option.value}
+                    onChange={() => {
+                      setService(option.value);
+                      const index = option.value === 'poor' ? 0 : option.value === 'okay' ? 1 : 2;
+                      const currentVenue = venues.find(v => v.value === venue);
+                      if (currentVenue) {
+                        setTipPercent(currentVenue.tips[index]);
+                      }
+                    }}
+                    sx={iconButtonSx}
+                  >
+                    <Box display="flex" flexDirection="column" alignItems="center">
+                      {option.icon}
+                      <Typography variant="caption" className="icon-label" sx={{ mt: 0.5 }}>
+                        {option.label}
+                      </Typography>
+                    </Box>
+                  </ToggleButton>
+                </Grid>
+              ))}
+            </Grid>
+            {/* SectionHeader for Service */}
+            <SectionHeader text="RATE YOUR SERVICE" />
+          </Container>
+        </Box>
+
+        {/* Right/Bottom Panel */}
+        <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-start">
+          <Container maxWidth="xs">
+            {/* TIP BOX */}
+            <Paper
+              sx={{
+                backgroundColor: 'var(--panel-bg-color)',
+                color: 'var(--text-color)',
+                mt: 2,
+                px: 0,
+                py: 0,
+                borderRadius: 2,
+                overflow: 'hidden',
+              }}
+            >
+              <Grid container >
+                {/* Row 1 */}
+                <Grid size={6} sx={{
+                  borderBottom: '1px solid var(--panel-border-color)',
+                  borderRight: '1px solid var(--panel-border-color)',
+                  p: 1,
+                  textAlign: 'center'
+                }}>
+                  <Box display="flex" alignItems="center">
+                    <Box textAlign="center" flex={1}>
+                      {(() => {
+                        // Show adjusted tip percent if rounding is enabled, else base tipPercent
+                        const effectiveTipPercent = roundingEnabled && sub > 0
+                          ? Math.round((tipAmount / sub) * 100)
+                          : tipPercent;
+                        return (
+                          <Typography variant="h5" align="center">
+                            {effectiveTipPercent}%
+                          </Typography>
+                        );
+                      })()}
+                      <Typography noWrap variant="caption">Tip Percentage</Typography>
+                    </Box>
+                    <Box display="flex" flexDirection={"column"}>
+                      <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, 1))} color="inherit">
+                        <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
+                      </IconButton>
+                      <IconButton sx={{ padding: '0' }} onClick={() => setTipPercent(adjustValue(tipPercent, -1))} color="inherit">
+                        <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid
+                  size={6}
+                  sx={{
+                    borderBottom: '1px solid var(--panel-border-color)',
+                    p: 1,
+                    textAlign: 'center',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                  }}
+                  onClick={() => setRoundingEnabled(!roundingEnabled)}
+                >
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRoundingMenuClick(e);
+                    }}
+                    size="small"
+                    sx={{ position: 'absolute', top: 0, right: 0, color: 'var(--highlight-color)' }}
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                  <Typography variant="h5">${tipAmount.toFixed(2)}</Typography>
+                  <Typography variant="caption">
+                    Tip Amount<br />(Tap to {roundingEnabled ? 'Unround' : 'Round'})
+                  </Typography>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={roundingMenuOpen}
+                    onClose={handleRoundingMenuClose}
+                  >
+                    <MenuItem
+                      selected={rounding === 'dollar'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRoundingOptionSelect('dollar');
+                        handleRoundingMenuClose();
+                      }}
+                    >
+                      Round Tip to Dollar {rounding === 'dollar' && '✓'}
+                    </MenuItem>
+                    <MenuItem
+                      selected={rounding === 'dime'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRoundingOptionSelect('dime');
+                        handleRoundingMenuClose();
+                      }}
+                    >
+                      Round Tip to Dime {rounding === 'dime' && '✓'}
+                    </MenuItem>
+                    <MenuItem
+                      selected={rounding === 'dimeTotal'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRoundingOptionSelect('dimeTotal');
+                        handleRoundingMenuClose();
+                      }}
+                    >
+                      Round Total to Dime {rounding === 'dimeTotal' && '✓'}
+                    </MenuItem>
+                  </Menu>
+                </Grid>
+
+                {/* Row 2 */}
+                <Grid size={6} sx={{
+                  borderRight: '1px solid var(--panel-border-color)',
+                  p: 1,
+                  textAlign: 'center'
+                }}>
+                  <Box display="flex" alignItems="center">
+                    <Box textAlign="center" flex={1}>
+                      <Typography variant="h5">{numPeople}</Typography>
+                      <Typography noWrap variant="caption">No. of People</Typography>
+                    </Box>
+                    <Box display="flex" flexDirection={"column"}>
+                      <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, 1))} color="inherit">
+                        <ArrowDropUpIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
+                      </IconButton>
+                      <IconButton sx={{ padding: '0' }} onClick={() => setNumPeople(adjustValue(numPeople, -1))} color="inherit">
+                        <ArrowDropDownIcon sx={{ fontSize: 'clamp(40px, 6vw, 60px)' }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid size={6} sx={{
+                  p: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                }}>
+                  <Typography variant="h5">${eachPays.toFixed(2)}</Typography>
+                  <Typography variant="caption">Each Person Pays</Typography>
+                </Grid>
+              </Grid>
+            </Paper>
+
+            <Typography variant="h6" align="center" mt={4}>
+              Grand Total: ${totalWithTip.toFixed(2)}
+            </Typography>
+          </Container>
+        </Box>
+      </Box>
       {calculatorOpen && (
         <KeypadModal
           open={!!calculatorOpen}

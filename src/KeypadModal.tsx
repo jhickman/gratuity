@@ -1,4 +1,5 @@
 import { Box, Grid, Modal, Typography } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { useEffect, useState } from 'react';
 import { SectionHeader } from './SectionHeader';
 
@@ -18,6 +19,8 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
   onConfirm,
 }) => {
   const [value, setValue] = useState(initialAmount);
+
+  const isLandscape = useMediaQuery('(orientation: landscape)');
 
   useEffect(() => {
     setValue(initialAmount);
@@ -68,26 +71,29 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          height: '100vh',
+          minHeight: '100vh',
           width: '100vw',
           backgroundColor: 'var(--background-color)',
           color: 'var(--text-color)',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: isLandscape ? 'row' : 'column',
           alignItems: 'center',
-          justifyContent: 'start',
-          pt: 6,
+          justifyContent: 'center',
+          //pt: isLandscape ? 0 : 6,
         }}
       >
-        <Typography variant="h3">
-          {formatAmount()}
-        </Typography>
-
-        <SectionHeader text={label ?? ''} />
-
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
+        {/* Left/Top Panel: Amount and label */}
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 4, 
+          width: isLandscape ? '50vw': '100%' }}>
+          <Typography variant="h3">{formatAmount()}</Typography>
+          <SectionHeader text={label ?? ''} />
+        </Box>
+        {/* Right/Bottom Panel: Keypad */}
+        <Box sx={{ flex: 1, maxWidth: 480, width: '100%', display: 'flex' }}>
           <Grid container spacing={0} sx={{ flexGrow: 1, width: '100%' }}>
-            {['1','2','3','4','5','6','7','8','9','<','0','Return'].map((key, index) => (
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'Return'].map((key, index) => (
               <Grid size={4} key={index}>
                 <Box
                   onClick={() => {
@@ -101,7 +107,7 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: key === 'Return' ? '5vw' : '9vw',
+                    fontSize: key === 'Return' ? '4vh' : '9vh',
                     maxFontSize: 36,
                     color: 'var(--text-color)',
                     userSelect: 'none',
