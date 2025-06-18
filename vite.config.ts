@@ -18,8 +18,8 @@ export default defineConfig({
         short_name: 'Gratuity',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#0097a7',
+        background_color: '#111827',
+        theme_color: '#111827',
         icons: [
           {
             src: 'pwa-192x192.png',
