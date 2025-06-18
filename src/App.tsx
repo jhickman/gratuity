@@ -45,6 +45,29 @@ function App() {
   const [tipPercent, setTipPercent] = useState(15);
   const [numPeople, setNumPeople] = useState(1);
 
+  // Dynamically update theme color based on light/dark mode
+  useEffect(() => {
+    const updateThemeColor = (e?: MediaQueryListEvent) => {
+      const isDark = e?.matches ?? window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const themeColor = isDark ? '#111827' : '#fafafa';
+
+      let meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'theme-color');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', themeColor);
+    };
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', updateThemeColor);
+
+    updateThemeColor(); // set on load
+
+    return () => media.removeEventListener('change', updateThemeColor);
+  }, []);
+
   const [rounding, setRounding] = useState<'dollar' | 'dime' | 'dimeTotal'>('dollar');
   const [roundingEnabled, setRoundingEnabled] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -339,7 +362,7 @@ function App() {
         {/* SectionHeader for Service */}
         <SectionHeader text="RATE YOUR SERVICE" />
 
-
+        {/* TIP BOX */}
         <Paper
           sx={{
             backgroundColor: 'var(--panel-bg-color)',
@@ -353,9 +376,14 @@ function App() {
         >
           <Grid container >
             {/* Row 1 */}
-            <Grid size={6} sx={{ borderBottom: '1px solid var(--panel-border-color)', borderRight: '1px solid var(--panel-border-color)', p: 2, textAlign: 'center' }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Box textAlign="center">
+            <Grid size={6} sx={{
+              borderBottom: '1px solid var(--panel-border-color)',
+              borderRight: '1px solid var(--panel-border-color)',
+              p: 1,
+              textAlign: 'center'
+            }}>
+              <Box display="flex" alignItems="center">
+                <Box textAlign="center" flex={1}>
                   {(() => {
                     // Show adjusted tip percent if rounding is enabled, else base tipPercent
                     const effectiveTipPercent = roundingEnabled && sub > 0
@@ -371,10 +399,10 @@ function App() {
                 </Box>
                 <Box display="flex" flexDirection={"column"}>
                   <IconButton onClick={() => setTipPercent(adjustValue(tipPercent, 1))} color="inherit">
-                    <ArrowDropUpIcon />
+                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
                   </IconButton>
                   <IconButton onClick={() => setTipPercent(adjustValue(tipPercent, -1))} color="inherit">
-                    <ArrowDropDownIcon />
+                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
                   </IconButton>
                 </Box>
               </Box>
@@ -383,10 +411,13 @@ function App() {
               size={6}
               sx={{
                 borderBottom: '1px solid var(--panel-border-color)',
-                p: 2,
+                p: 1,
                 textAlign: 'center',
                 position: 'relative',
                 cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
               }}
               onClick={() => setRoundingEnabled(!roundingEnabled)}
             >
@@ -443,23 +474,29 @@ function App() {
             </Grid>
 
             {/* Row 2 */}
-            <Grid size={6} sx={{ borderRight: '1px solid var(--panel-border-color)', p: 2, textAlign: 'center' }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Box textAlign="center">
+            <Grid size={6} sx={{
+              borderRight: '1px solid var(--panel-border-color)',
+              p: 1,
+              textAlign: 'center'
+            }}>
+              <Box display="flex" alignItems="center">
+                <Box textAlign="center" flex={1}>
                   <Typography variant="h5">{numPeople}</Typography>
                   <Typography noWrap variant="caption">No. of People</Typography>
                 </Box>
                 <Box display="flex" flexDirection={"column"}>
                   <IconButton onClick={() => setNumPeople(adjustValue(numPeople, 1))} color="inherit">
-                    <ArrowDropUpIcon />
+                    <ArrowDropUpIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
                   </IconButton>
                   <IconButton onClick={() => setNumPeople(adjustValue(numPeople, -1))} color="inherit">
-                    <ArrowDropDownIcon />
+                    <ArrowDropDownIcon sx={{ fontSize: 'clamp(24px, 6vw, 40px)' }} />
                   </IconButton>
                 </Box>
               </Box>
             </Grid>
-            <Grid size={6} sx={{ p: 2, textAlign: 'center' }}>
+            <Grid size={6} sx={{
+              p: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+            }}>
               <Typography variant="h5">${eachPays.toFixed(2)}</Typography>
               <Typography variant="caption">Each Person Pays</Typography>
             </Grid>

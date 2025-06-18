@@ -70,7 +70,7 @@ export const KeypadModal: React.FC<KeypadModalProps> = ({
         sx={{
           height: '100vh',
           width: '100vw',
-          backgroundColor: 'var(--primary-color)',
+          backgroundColor: 'var(--background-color)',
           color: 'var(--text-color)',
           display: 'flex',
           flexDirection: 'column',
