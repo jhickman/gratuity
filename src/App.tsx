@@ -1,6 +1,7 @@
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
+import Refresh from '@mui/icons-material/Refresh';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import FaceIcon from '@mui/icons-material/Face';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
@@ -46,6 +47,45 @@ function App() {
   const [service, setService] = useState('okay');
   const [tipPercent, setTipPercent] = useState(15);
   const [numPeople, setNumPeople] = useState(1);
+
+
+// ResetButton component
+function ResetButton({ onReset }: { onReset: () => void }) {
+  return (
+    <button
+      onClick={onReset}
+      style={{
+        position: 'absolute',
+        right: '0',
+        bottom: '0',
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        color: '#a285ff',
+        fontSize: '2rem',
+      }}
+      aria-label="Reset"
+    >
+      <Refresh />
+    </button>
+  );
+}
+  // Reset handler for ResetButton
+  function handleReset() {
+    setSubTotalAmount('');
+    setTaxAmountInput('');
+    setBillAmount('');
+    setManualTotal(false);
+    setTipPercent(15);
+    setNumPeople(1);
+    setVenue('restaurant');
+    setService('okay');
+    setRounding('dollar');
+    setRoundingEnabled(false);
+    setLastEdited([]);
+    setVenuePage(0);
+    // Reset any additional state as needed
+  }
 
   // Dynamically update theme color based on light/dark mode
   useEffect(() => {
@@ -256,7 +296,6 @@ function App() {
         flexDirection={isLandscape ? 'row' : 'column'}
         justifyContent="center"
         alignItems="stretch"
-        gap={4}
         px={2}
       >
         {/* Left/Top Panel */}
@@ -299,7 +338,7 @@ function App() {
               });
               return (
                 <Box {...swipeHandlers}>
-                  <Grid container spacing={2} justifyContent="center" sx={{ mb: 1, gap: '2em' }}>
+                  <Grid container spacing={2} justifyContent="center" sx={{ my: 2, gap: '2em' }}>
                     {venues.slice(venuePage * 3, venuePage * 3 + 3).map((option) => (
                       <Grid key={option.value}>
                         <ToggleButton
@@ -325,7 +364,7 @@ function App() {
                       </Grid>
                     ))}
                   </Grid>
-                  <Box display="flex" justifyContent="center" mb={3}>
+                  <Box display="flex" justifyContent="center" mb={1}>
                     {Array.from({ length: totalVenuePages }).map((_, i) => (
                       <Box
                         key={i}
@@ -345,7 +384,7 @@ function App() {
             {/* SectionHeader for Venue */}
             <SectionHeader text="SELECT YOUR VENUE" />
 
-            <Grid container spacing={2} justifyContent="center" sx={{ mb: 3, gap: '2em' }}>
+            <Grid container spacing={2} justifyContent="center" sx={{ my: 2, gap: '2em' }}>
               {[
                 { value: 'poor', icon: <SentimentVeryDissatisfiedIcon />, label: 'Poor' },
                 { value: 'okay', icon: <SentimentSatisfiedIcon />, label: 'Okay' },
@@ -524,8 +563,9 @@ function App() {
               </Grid>
             </Paper>
 
-            <Typography variant="h6" align="center" mt={4}>
+            <Typography variant="h6" align="center" mt={4} position={'relative'}>
               Grand Total: ${totalWithTip.toFixed(2)}
+              <ResetButton onReset={handleReset} />
             </Typography>
           </Container>
         </Box>
